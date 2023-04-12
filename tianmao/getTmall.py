@@ -4,9 +4,8 @@ from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 import time
-import numpy, pandas
+import numpy as np, pandas as pd
 import xlwt, xlrd
-import win32ui,win32con,pythoncom,win32gui,pyhooks
 
 os.system('start chrome.exe --remote-debugging-port=9222')
 # 获取浏览器控制器
@@ -17,7 +16,7 @@ chrome_driver = r"C:\Users\PC\AppData\Local\Programs\Python\Python310\Scripts\ch
 driver = webdriver.Chrome(chrome_driver, chrome_options=chrome_options)
 
 
-def gdydjdd():
+def jd():
     # 打开网址并获取信息
     driver.get(url1)
     num = range(5)
@@ -63,13 +62,22 @@ def tmall(url):
 
 url1 = "https://item.jd.com/100048731327.html#none"
 url4 = "692178340554"
-url_tmall = {'广东移动官方旗舰店': '688946628020', '喵速达-iPhone14pro': '688288232532', '中国移动手机官方旗舰店-iPhone14pro': '683384949809'}
+iPhone14pro = {'广东移动官方旗舰店': '688946628020', '喵速达': '688288232532', '中国移动手机官方旗舰店': '683384949809'}
 
+# 店铺sku
+product1 = {'广东移动官方旗舰店': '688946628020', '喵速达': '688288232532', '中国移动手机官方旗舰店': '683384949809'}
+# 产品名单
+productDict = {'iPhone14pro': product1}
 
 # 循环调用函数输出对应商品的信息进excel
-for urlId in url_tmall:
-    print(urlId)
-    tmall(url_tmall[urlId])
-    time.sleep(5)
+for p in productDict:
+    # 输出商品名
+    print(p)
+    # 循环遍历该商品的所有店铺
+    shop = productDict[p]
+    for s in shop:
+        print(s)
+        tmall(shop[s])
+        time.sleep(5)
 driver.quit()
 
