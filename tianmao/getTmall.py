@@ -4,8 +4,10 @@ from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 import time
-import numpy as np, pandas as pd
-import xlwt, xlrd
+import numpy as np
+import pandas as pd
+import openpyxl
+
 
 os.system('start chrome.exe --remote-debugging-port=9222')
 # 获取浏览器控制器
@@ -30,7 +32,7 @@ def jd():
             print("价格：", price)
 
 
-def tmall(url):
+def tmall(url, tb, shop_num):
     # 打开网站
     driver.get("https://detail.tmall.com/item.htm?id=%s" % url)
     time.sleep(5)
@@ -42,12 +44,16 @@ def tmall(url):
         print("无法选择官方标配或已选择官方标配")
     # 定位价格模块
     capacity = driver.find_elements(By.XPATH, "//div[@class='skuCate'][2]/div[@class='skuItemWrapper']/div")
+    # 设置手机容量计数器
+    cap_num = 0
     # 循环点击各个容量
     for c in capacity:
         time.sleep(3)
         # 判断是否缺货
         if c.get_attribute('class') == 'skuItem disabled':
             print(c.text, '缺货')
+            tb.iat[cap_num, shop_num] = '缺货'
+            cap_num += 1
             continue
         c.click()
         # 点击有库存的颜色
@@ -55,9 +61,11 @@ def tmall(url):
         # 输出内存和价格
         price = driver.find_element(By.XPATH, "//div[@class='Price--extraPrice--2qsGsY3']").text
         print(c.text, price)
+        tb.iat[cap_num, shop_num] = price
         # 重新点击当前颜色恢复原始状态，并在下一个循环重新选择内存
         driver.find_element(By.XPATH, "//div[@class='skuCate'][1]/div[@class='skuItemWrapper']"
                                       "/div[@class='skuItem current']").click()
+        cap_num += 1
 
 
 url1 = "https://item.jd.com/100048731327.html#none"
@@ -69,15 +77,31 @@ product1 = {'广东移动官方旗舰店': '688946628020', '喵速达': '6882882
 # 产品名单
 productDict = {'iPhone14pro': product1}
 
-# 循环调用函数输出对应商品的信息进excel
+
+# 新建一个二维数组,存储价格数据
+columns = ['容量']
+for s in product1:
+    columns.append(s)
+df = pd.DataFrame(index=range(4), columns=columns)
+cap = ['128G', '256G', '512G', '1T']
+for i in range(4):
+    df.iat[i, 0] = cap[i]
+
+# 循环调用函数将对应商品的价格输入数组
 for p in productDict:
     # 输出商品名
     print(p)
     # 循环遍历该商品的所有店铺
     shop = productDict[p]
+    # 设置店铺计数器
+    count1 = 1
     for s in shop:
+        # 输出店铺名
         print(s)
-        tmall(shop[s])
+        tmall(shop[s], df, count1)
         time.sleep(5)
+        count1 += 1
 driver.quit()
+print(df)
+df.to_excel('output.xlsx', index=False)
 

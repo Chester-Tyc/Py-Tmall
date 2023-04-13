@@ -1,27 +1,29 @@
-import os
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-import time
-from selenium.webdriver.chrome.options import Options
-import win32ui,win32con,pythoncom,win32gui,pyhooks
-
-os.system('start chrome.exe --remote-debugging-port=9222')
-# 获取浏览器控制器
-chrome_options = Options()
-chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
-# 浏览器驱动
-chrome_driver = r"C:\Users\PC\AppData\Local\Programs\Python\Python310\Scripts\chromedriver.exe"
-driver = webdriver.Chrome(chrome_driver, chrome_options=chrome_options)
+import numpy as np
+import pandas as pd
 
 
-# 打开网址并获取信息
-driver.get("https://www.alibaba.com/product-detail/Fashionable-Custom-Baby-Girl-Winter-Clothes_62435400195.html?spm=a2700.galleryofferlist.normal_offer.d_title.658f68e2JgdIpL")
-print("标题：", driver.find_element(By.XPATH, "//div[@class='product-title']/h1").text)
-print("销量：", driver.find_element(By.XPATH, "//div[@id='product-review']/div/span").text)
+# 店铺sku
+product1 = {'广东移动官方旗舰店': '688946628020', '喵速达': '688288232532', '中国移动手机官方旗舰店': '683384949809'}
+product2 = {}
+# 产品名单
+productDict = {'iPhone14pro': product1}
 
+index = []
+columns = []
+
+for p in productDict:
+    index.append(p)
+
+for s in product1:
+    columns.append(s)
+
+df = pd.DataFrame(index=range(10), columns=columns)
+df.insert(0, '容量', '')
+cap = ['128G', '256G', '512G', '1T']
 for i in range(4):
-    if i > 0:
-        print(driver.find_element(By.XPATH, "//div[@class='price-list']/div[%d]/div[1]" % i).text)
-        print(driver.find_element(By.XPATH, "//div[@class='price-list']/div[%d]/div[2]" % i).text)
+    df.iat[i, 0] = cap[i]
 
-driver.quit()
+print(df)
+
+
+
