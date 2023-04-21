@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import openpyxl
 
 
 # 店铺sku
@@ -17,13 +18,22 @@ for p in productDict:
 for s in product1:
     columns.append(s)
 
-df = pd.DataFrame(index=range(10), columns=columns)
-df.insert(0, '容量', '')
+df2 = pd.DataFrame(columns=columns)
+df2 = df2._append(pd.DataFrame([[np.nan]*len(df2.columns)], columns=df2.columns), ignore_index=True)
+df2 = df2._append(pd.DataFrame([[np.nan]*len(df2.columns)], columns=df2.columns), ignore_index=True)
+'''df1.insert(0, '容量', '')
 cap = ['128G', '256G', '512G', '1T']
 for i in range(4):
-    df.iat[i, 0] = cap[i]
+    df1.iat[i, 0] = cap[i]'''
 
+df1 = pd.read_excel(io='./竞品数据.xlsx')
+
+df3 = pd.DataFrame()
+
+print(df1)
+print(df2)
+print(df3)
+frame = [df1, df1]
+df = pd.concat(frame, axis=1)
 print(df)
-
-
-
+# df.to_excel('output.xlsx', index=False)
